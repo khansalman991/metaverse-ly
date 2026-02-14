@@ -1,0 +1,11 @@
+{
+  "name": "skyoffice-server",
+  "scripts": {
+    "start": "ts-node-dev -r tsconfig-paths/register index.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0"
+  }
+}
