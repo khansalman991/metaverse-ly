@@ -7,26 +7,21 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 
-// Swiper imports (v7/8/9+)
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from 'swiper'
-
-// Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
 
-// Avatar images (now that the folder structure is fixed)
 import Adam from '../images/login/Adam_login.png'
 import Ash from '../images/login/Ash_login.png'
 import Lucy from '../images/login/Lucy_login.png'
 import Nancy from '../images/login/Nancy_login.png'
+import { useAppSelector, useAppDispatch } from '../hooks'
+import { setLoggedIn } from '../stores/UserStore'
+import { getAvatarString, getColorByString } from '../util'
 
-import { useAppSelector, useAppDispatch } from '../../hooks'
-import { setLoggedIn } from '../../stores/UserStore'
-import { getAvatarString, getColorByString } from '../../util'
-
-import phaserGame from '../../PhaserGame'
-import Game from '../../scenes/Game'
+import phaserGame from '../PhaserGame'
+import Game from '../scenes/Game'
 
 const Wrapper = styled.form`
   position: fixed;
@@ -37,7 +32,6 @@ const Wrapper = styled.form`
   border-radius: 16px;
   padding: 36px 60px;
   box-shadow: 0px 0px 5px #0000006f;
-  z-index: 2000;
 `
 
 const Title = styled.p`
@@ -88,6 +82,7 @@ const Content = styled.div`
 
 const Left = styled.div`
   margin-right: 48px;
+
   --swiper-navigation-size: 24px;
 
   .swiper {
@@ -132,7 +127,6 @@ const Warning = styled.div`
   gap: 3px;
 `
 
-// Avatar list with images
 const avatars = [
   { name: 'adam', img: Adam },
   { name: 'ash', img: Ash },
@@ -140,10 +134,10 @@ const avatars = [
   { name: 'nancy', img: Nancy },
 ]
 
-// Shuffle avatars (same as before)
+// shuffle the avatars array
 for (let i = avatars.length - 1; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1));
-  [avatars[i], avatars[j]] = [avatars[j], avatars[i]];
+  const j = Math.floor(Math.random() * (i + 1))
+  ;[avatars[i], avatars[j]] = [avatars[j], avatars[i]]
 }
 
 export default function LoginDialog() {
@@ -151,19 +145,18 @@ export default function LoginDialog() {
   const [avatarIndex, setAvatarIndex] = useState<number>(0)
   const [nameFieldEmpty, setNameFieldEmpty] = useState<boolean>(false)
   const dispatch = useAppDispatch()
-  
   const videoConnected = useAppSelector((state) => state.user.videoConnected)
   const roomJoined = useAppSelector((state) => state.room.roomJoined)
   const roomName = useAppSelector((state) => state.room.roomName)
   const roomDescription = useAppSelector((state) => state.room.roomDescription)
-  
   const game = phaserGame.scene.keys.game as Game
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (name.trim() === '') {
+    if (name === '') {
       setNameFieldEmpty(true)
-    } else if (roomJoined && game) {
+    } else if (roomJoined) {
+      console.log('Join! Name:', name, 'Avatar:', avatars[avatarIndex].name)
       game.registerKeys()
       game.myPlayer.setPlayerName(name)
       game.myPlayer.setPlayerTexture(avatars[avatarIndex].name)
@@ -172,14 +165,9 @@ export default function LoginDialog() {
     }
   }
 
-  // Type workarounds for strict MUI
-  const MuiAlert = Alert as any;
-  const MuiTextField = TextField as any;
-  const MySwiper = Swiper as any;
-
   return (
     <Wrapper onSubmit={handleSubmit}>
-      <Title>Welcome to Metaverse</Title>
+      <Title>Joining</Title>
       <RoomName>
         <Avatar style={{ background: getColorByString(roomName) }}>
           {getAvatarString(roomName)}
@@ -187,17 +175,17 @@ export default function LoginDialog() {
         <h3>{roomName}</h3>
       </RoomName>
       <RoomDescription>
-        <ArrowRightIcon /> {roomDescription || 'No description provided'}
+        <ArrowRightIcon /> {roomDescription}
       </RoomDescription>
       <Content>
         <Left>
           <SubTitle>Select an avatar</SubTitle>
-          <MySwiper
+          <Swiper
             modules={[Navigation]}
             navigation
             spaceBetween={0}
             slidesPerView={1}
-            onSlideChange={(swiper: any) => {
+            onSlideChange={(swiper) => {
               setAvatarIndex(swiper.activeIndex)
             }}
           >
@@ -206,10 +194,10 @@ export default function LoginDialog() {
                 <img src={avatar.img} alt={avatar.name} />
               </SwiperSlide>
             ))}
-          </MySwiper>
+          </Swiper>
         </Left>
         <Right>
-          <MuiTextField
+          <TextField
             autoFocus
             fullWidth
             label="Name"
@@ -217,22 +205,22 @@ export default function LoginDialog() {
             color="secondary"
             error={nameFieldEmpty}
             helperText={nameFieldEmpty && 'Name is required'}
-            sx={{ input: { color: 'white' }, label: { color: '#aaa' } }}
-            onChange={(e: any) => {
-              setName(e.target.value)
-              if (e.target.value !== '') setNameFieldEmpty(false)
+            onInput={(e) => {
+              setName((e.target as HTMLInputElement).value)
             }}
           />
           {!videoConnected && (
             <Warning>
-              <MuiAlert variant="outlined" severity="warning">
+              <Alert variant="outlined" severity="warning">
                 <AlertTitle>Warning</AlertTitle>
-                <div>No webcam/mic connected - <strong>connect one for best experience!</strong></div>
-              </MuiAlert>
+                No webcam/mic connected - <strong>connect one for best experience!</strong>
+              </Alert>
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() => game?.network.webRTC?.getUserMedia()}
+                onClick={() => {
+                  game.network.webRTC?.getUserMedia()
+                }}
               >
                 Connect Webcam
               </Button>
@@ -241,10 +229,7 @@ export default function LoginDialog() {
 
           {videoConnected && (
             <Warning>
-              <MuiAlert variant="outlined" severity="info">
-                <AlertTitle>Info</AlertTitle>
-                <div>Webcam connected!</div>
-              </MuiAlert>
+              <Alert variant="outlined">Webcam connected!</Alert>
             </Warning>
           )}
         </Right>
