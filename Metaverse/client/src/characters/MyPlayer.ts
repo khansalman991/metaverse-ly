@@ -30,6 +30,9 @@ export default class MyPlayer extends Player {
   ) {
     super(scene, x, y, texture, id, frame)
     this.playContainerBody = this.playerContainer.body as Phaser.Physics.Arcade.Body
+
+    // Log when player is created
+    console.log('MyPlayer created with id:', id);
   }
 
   setPlayerName(name: string) {
@@ -48,6 +51,10 @@ export default class MyPlayer extends Player {
     this.joystickMovement = movement
   }
 
+  setChatBubble(text: string) {
+    this.updateDialogBubble(text);
+  }
+
   update(
     playerSelector: PlayerSelector,
     cursors: NavKeys,
@@ -55,24 +62,30 @@ export default class MyPlayer extends Player {
     keyR: Phaser.Input.Keyboard.Key,
     network: Network
   ) {
-    if (!cursors) return
+    // Debug: log if cursors is undefined
+    if (!cursors) {
+      console.warn('Cursors is undefined in MyPlayer.update');
+      return;
+    }
+
+    // Debug: log key states (optional, comment out after testing)
+    // console.log(`Left: ${cursors.left?.isDown}, Right: ${cursors.right?.isDown}, Up: ${cursors.up?.isDown}, Down: ${cursors.down?.isDown}`);
 
     const item = playerSelector.selectedItem
 
     // Handle Item Interactions (Key R)
     if (Phaser.Input.Keyboard.JustDown(keyR)) {
+      console.log('Key R pressed, item type:', item?.itemType);
       switch (item?.itemType) {
         case ItemType.COMPUTER:
           const computer = item as Computer
-          computer.openDialog(this.playerId, network)
+          computer.interact(network)
           break
         case ItemType.WHITEBOARD:
           const whiteboard = item as Whiteboard
           whiteboard.openDialog(network)
           break
         case ItemType.VENDINGMACHINE:
-          // Cleaned: Removed external link logic. 
-          // You can trigger a chat bubble or local effect here instead.
           this.setChatBubble('Refreshing... ☕')
           break
       }
@@ -119,11 +132,25 @@ export default class MyPlayer extends Player {
         let vx = 0
         let vy = 0
 
-        if (cursors.left?.isDown || cursors.A?.isDown || this.joystickMovement?.direction.left) vx -= speed
-        if (cursors.right?.isDown || cursors.D?.isDown || this.joystickMovement?.direction.right) vx += speed
-        if (cursors.up?.isDown || cursors.W?.isDown || this.joystickMovement?.direction.up) vy -= speed
-        if (cursors.down?.isDown || cursors.S?.isDown || this.joystickMovement?.direction.down) vy += speed
+        // Check keyboard or joystick
+        if (cursors.left?.isDown || cursors.A?.isDown || this.joystickMovement?.direction.left) {
+          vx -= speed;
+          console.log('Moving left');
+        }
+        if (cursors.right?.isDown || cursors.D?.isDown || this.joystickMovement?.direction.right) {
+          vx += speed;
+          console.log('Moving right');
+        }
+        if (cursors.up?.isDown || cursors.W?.isDown || this.joystickMovement?.direction.up) {
+          vy -= speed;
+          console.log('Moving up');
+        }
+        if (cursors.down?.isDown || cursors.S?.isDown || this.joystickMovement?.direction.down) {
+          vy += speed;
+          console.log('Moving down');
+        }
 
+        // Apply velocity
         this.setVelocity(vx, vy)
         this.body.velocity.setLength(vx !== 0 || vy !== 0 ? speed : 0)
         this.playContainerBody.setVelocity(vx, vy)
@@ -162,9 +189,6 @@ export default class MyPlayer extends Player {
         }
         break
     }
-  }
-  setChatBubble(arg0: string) {
-    throw new Error('Method not implemented.')
   }
 }
 

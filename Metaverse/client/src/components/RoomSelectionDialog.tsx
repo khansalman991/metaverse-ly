@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import logo from '../images/logo.png'
+// If you have a logo.png in src/characters/images/, uncomment the line below and delete the placeholder.
+// import logo from '../images/logo.png'
 import styled from 'styled-components'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -12,10 +13,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 import { CustomRoomTable } from './CustomRoomTable'
 import { CreateRoomForm } from './CreateRoomForm'
-import { useAppSelector } from '../hooks'
+import { useAppSelector } from '../../hooks'
 
-import phaserGame from '../PhaserGame'
-import Bootstrap from '../scenes/Bootstrap'
+import phaserGame from '../../PhaserGame'
+import Bootstrap from '../../scenes/Bootstrap'
+
+// Placeholder image URL (you can replace with your own)
+const logoPlaceholder = 'https://via.placeholder.com/120x120?text=Logo'
 
 const Backdrop = styled.div`
   position: absolute;
@@ -119,8 +123,8 @@ export default function RoomSelectionDialog() {
     }
   }
 
-  // Define MuiAlert as any to bypass the 'children' type error in strict mode
-  const MuiAlert = Alert as any;
+  // MuiAlert type workaround
+  const MuiAlert = Alert as any
 
   return (
     <>
@@ -128,9 +132,7 @@ export default function RoomSelectionDialog() {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={showSnackbar}
         autoHideDuration={3000}
-        onClose={() => {
-          setShowSnackbar(false)
-        }}
+        onClose={() => setShowSnackbar(false)}
       >
         <MuiAlert
           severity="error"
@@ -183,7 +185,7 @@ export default function RoomSelectionDialog() {
             <>
               <Title>Welcome to Metaverse</Title>
               <Content>
-                <img src={logo} alt="logo" />
+                <img src={logoPlaceholder} alt="logo" />
                 <Button variant="contained" color="secondary" onClick={handleConnect}>
                   Connect to public lobby
                 </Button>
@@ -200,7 +202,7 @@ export default function RoomSelectionDialog() {
         </Wrapper>
         {!lobbyJoined && (
           <ProgressBarWrapper>
-            <h3> Connecting to server...</h3>
+            <h3>Connecting to server...</h3>
             <ProgressBar color="secondary" />
           </ProgressBarWrapper>
         )}

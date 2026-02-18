@@ -7,24 +7,26 @@ import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 
-// FIX: Modern Swiper (v7/8/9+) modular imports
+// Swiper imports (v7/8/9+)
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper' // NOT 'swiper/modules'
+import { Navigation } from 'swiper'
 
-// Import Swiper styles
+// Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
 
+// Avatar images (now that the folder structure is fixed)
 import Adam from '../images/login/Adam_login.png'
 import Ash from '../images/login/Ash_login.png'
 import Lucy from '../images/login/Lucy_login.png'
 import Nancy from '../images/login/Nancy_login.png'
-import { useAppSelector, useAppDispatch } from '../hooks'
-import { setLoggedIn } from '../stores/UserStore'
-import { getAvatarString, getColorByString } from '../util'
 
-import phaserGame from '../PhaserGame'
-import Game from '../scenes/Game'
+import { useAppSelector, useAppDispatch } from '../../hooks'
+import { setLoggedIn } from '../../stores/UserStore'
+import { getAvatarString, getColorByString } from '../../util'
+
+import phaserGame from '../../PhaserGame'
+import Game from '../../scenes/Game'
 
 const Wrapper = styled.form`
   position: fixed;
@@ -130,6 +132,7 @@ const Warning = styled.div`
   gap: 3px;
 `
 
+// Avatar list with images
 const avatars = [
   { name: 'adam', img: Adam },
   { name: 'ash', img: Ash },
@@ -137,10 +140,10 @@ const avatars = [
   { name: 'nancy', img: Nancy },
 ]
 
-// Shuffle logic remains same
+// Shuffle avatars (same as before)
 for (let i = avatars.length - 1; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1))
-  ;[avatars[i], avatars[j]] = [avatars[j], avatars[i]]
+  const j = Math.floor(Math.random() * (i + 1));
+  [avatars[i], avatars[j]] = [avatars[j], avatars[i]];
 }
 
 export default function LoginDialog() {
@@ -154,7 +157,6 @@ export default function LoginDialog() {
   const roomName = useAppSelector((state) => state.room.roomName)
   const roomDescription = useAppSelector((state) => state.room.roomDescription)
   
-  // Cast scenes properly to avoid 'undefined' errors
   const game = phaserGame.scene.keys.game as Game
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -170,14 +172,14 @@ export default function LoginDialog() {
     }
   }
 
-  // Bypassing MUI strict typing with 'any' as requested
+  // Type workarounds for strict MUI
   const MuiAlert = Alert as any;
   const MuiTextField = TextField as any;
   const MySwiper = Swiper as any;
 
   return (
     <Wrapper onSubmit={handleSubmit}>
-      <Title>Welcome to Meatverse</Title>
+      <Title>Welcome to Metaverse</Title>
       <RoomName>
         <Avatar style={{ background: getColorByString(roomName) }}>
           {getAvatarString(roomName)}
@@ -191,7 +193,7 @@ export default function LoginDialog() {
         <Left>
           <SubTitle>Select an avatar</SubTitle>
           <MySwiper
-            modules={[Navigation]} 
+            modules={[Navigation]}
             navigation
             spaceBetween={0}
             slidesPerView={1}

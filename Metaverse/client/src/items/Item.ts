@@ -9,24 +9,27 @@ export default class Item extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
     super(scene, x, y, texture, frame)
 
-    // add dialogBox and statusBox containers on top of everything which we can add text in later
     this.dialogBox = this.scene.add.container().setDepth(10000)
     this.statusBox = this.scene.add.container().setDepth(10000)
   }
 
-  // add texts into dialog box container
+  // Default method – subclasses should override
+  onOverlapDialog() {
+    // no‑op
+  }
+
   setDialogBox(text: string) {
+    this.clearDialogBox()
     const innerText = this.scene.add
       .text(0, 0, text)
       .setFontFamily('Arial')
       .setFontSize(12)
       .setColor('#000000')
 
-    // set dialogBox slightly larger than the text in it
-    const dialogBoxWidth = innerText.width + 4
-    const dialogBoxHeight = innerText.height + 2
+    const dialogBoxWidth = innerText.width + 8
+    const dialogBoxHeight = innerText.height + 4
     const dialogBoxX = this.x - dialogBoxWidth * 0.5
-    const dialogBoxY = this.y + this.height * 0.5
+    const dialogBoxY = this.y - this.height - dialogBoxHeight
 
     this.dialogBox.add(
       this.scene.add
@@ -36,27 +39,25 @@ export default class Item extends Phaser.Physics.Arcade.Sprite {
         .lineStyle(1.5, 0x000000, 1)
         .strokeRoundedRect(dialogBoxX, dialogBoxY, dialogBoxWidth, dialogBoxHeight, 3)
     )
-    this.dialogBox.add(innerText.setPosition(dialogBoxX + 2, dialogBoxY))
+    this.dialogBox.add(innerText.setPosition(dialogBoxX + 4, dialogBoxY + 2))
   }
 
-  // remove everything in the dialog box container
   clearDialogBox() {
     this.dialogBox.removeAll(true)
   }
 
-  // add text into status box container
   setStatusBox(text: string) {
+    this.clearStatusBox()
     const innerText = this.scene.add
       .text(0, 0, text)
       .setFontFamily('Arial')
       .setFontSize(12)
       .setColor('#000000')
 
-    // set dialogBox slightly larger than the text in it
-    const statusBoxWidth = innerText.width + 4
-    const statusBoxHeight = innerText.height + 2
+    const statusBoxWidth = innerText.width + 8
+    const statusBoxHeight = innerText.height + 4
     const statusBoxX = this.x - statusBoxWidth * 0.5
-    const statusBoxY = this.y - this.height * 0.25
+    const statusBoxY = this.y - this.height * 0.25 - statusBoxHeight
     this.statusBox.add(
       this.scene.add
         .graphics()
@@ -65,10 +66,9 @@ export default class Item extends Phaser.Physics.Arcade.Sprite {
         .lineStyle(1.5, 0x000000, 1)
         .strokeRoundedRect(statusBoxX, statusBoxY, statusBoxWidth, statusBoxHeight, 3)
     )
-    this.statusBox.add(innerText.setPosition(statusBoxX + 2, statusBoxY))
+    this.statusBox.add(innerText.setPosition(statusBoxX + 4, statusBoxY + 2))
   }
 
-  // remove everything in the status box container
   clearStatusBox() {
     this.statusBox.removeAll(true)
   }

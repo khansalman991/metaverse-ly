@@ -14,7 +14,7 @@ export default class Background extends Phaser.Scene {
     const sceneHeight = this.cameras.main.height
     const sceneWidth = this.cameras.main.width
 
-    // set texture of images based on the background mode
+    // Set texture of images based on the background mode
     if (data.backgroundMode === BackgroundMode.DAY) {
       this.backdropKey = 'backdrop_day'
       this.cloudKey = 'cloud_day'
@@ -43,10 +43,11 @@ export default class Background extends Phaser.Scene {
       const y = Phaser.Math.RND.between(sceneHeight * 0.2, sceneHeight * 0.8)
       const velocity = Phaser.Math.RND.between(15, 30)
 
-      this.cloud
-        .get(x, y, this.cloudKey, frames[i % 6])
-        .setScale(3)
-        .setVelocity(velocity, 0)
+      const cloudItem = this.cloud.get(x, y, this.cloudKey, frames[i % 6])
+      if (cloudItem) {
+        cloudItem.setScale(3)
+        cloudItem.setVelocity(velocity, 0)
+      }
     }
   }
 
